@@ -114,7 +114,36 @@ FROM (
 SELECT
     event_type,
     COUNT(*) AS total_events,
-    COUNT(DISTINCT user_id) AS unique_users
+    COUNT(DISTINCT user_id) AS unique_users,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS event_pct
 FROM ecommerce_events
 GROUP BY event_type
 ORDER BY total_events DESC;
+
+
+/*
+📊 Findings from 01_data_check.sql
+Total dataset contains ~66M+ events, 3.69M unique users, and 13.7M sessions, indicating a large-scale behavioral dataset suitable for funnel analysis
+Event types are clean and limited to view, cart, and purchase, confirming no preprocessing is required for funnel stages
+Missing values in critical fields (user_id, event_time, event_type, price) are negligible, ensuring reliability of core analysis
+However, user_session has 10 missing records, which is minimal and unlikely to impact overall results
+Significant missing values observed in descriptive attributes:
+category_code → ~21.9M missing
+brand → ~9.2M missing
+→ This limits the reliability of category-level and brand-level analysis
+Price distribution shows:
+Average price ≈ 292
+Maximum price ≈ 2574
+Presence of 188K zero-priced records, indicating potential non-purchase events or tracking inconsistencies
+User activity is highly skewed:
+Top users generate 20K+ events
+Top users have 20K+ sessions
+→ Suggests presence of heavy users or abnormal activity (possibly bots or repeated interactions)
+Session activity is also skewed, with some sessions containing 4000+ events, indicating non-uniform user behavior
+Dataset contains 57,553 duplicate records, which is relatively small compared to total volume and acceptable for analysis
+Event distribution shows strong funnel drop-off:
+View: 63.5M events
+Cart: 3.0M events
+Purchase: 916K events
+→ Indicates significant user drop-off across funnel stages
+*/
