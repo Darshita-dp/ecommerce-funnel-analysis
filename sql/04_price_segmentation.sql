@@ -155,64 +155,29 @@ ORDER BY
 
 
 -- 6. Final comparison table for price segment performance
-WITH user_event_times AS (
-    SELECT
-        user_id,
-        AVG(price) AS avg_price,
-        MIN(CASE WHEN event_type = 'view' THEN event_time END) AS first_view_time,
-        MIN(CASE WHEN event_type = 'cart' THEN event_time END) AS first_cart_time,
-        MIN(CASE WHEN event_type = 'purchase' THEN event_time END) AS first_purchase_time
-    FROM ecommerce_events
-    GROUP BY user_id
-),
-segment_summary AS (
-    SELECT
-        CASE
-            WHEN avg_price < 50 THEN 'Low'
-            WHEN avg_price BETWEEN 50 AND 200 THEN 'Medium'
-            ELSE 'High'
-        END AS price_segment,
-        COUNT(*) AS total_users,
-        COUNT(CASE WHEN first_view_time IS NOT NULL THEN 1 END) AS view_users,
-        COUNT(CASE
-            WHEN first_view_time IS NOT NULL
-             AND first_cart_time IS NOT NULL
-             AND first_view_time < first_cart_time
-            THEN 1 END) AS cart_users,
-        COUNT(CASE
-            WHEN first_view_time IS NOT NULL
-             AND first_cart_time IS NOT NULL
-             AND first_purchase_time IS NOT NULL
-             AND first_view_time < first_cart_time
-             AND first_cart_time < first_purchase_time
-            THEN 1 END) AS purchase_users
-    FROM user_event_times
-    GROUP BY
-        CASE
-            WHEN avg_price < 50 THEN 'Low'
-            WHEN avg_price BETWEEN 50 AND 200 THEN 'Medium'
-            ELSE 'High'
-        END
-)
+-- -----------------------------------------------------
+-- Final price segment performance (using reusable model)
+-- -----------------------------------------------------
+
 SELECT
     price_segment,
-    total_users,
-    view_users,
-    cart_users,
-    purchase_users,
-    (view_users - cart_users) AS dropped_before_cart,
-    (cart_users - purchase_users) AS dropped_before_purchase,
-    ROUND((cart_users * 100.0 / NULLIF(view_users, 0))::numeric, 2) AS view_to_cart_pct,
-    ROUND((purchase_users * 100.0 / NULLIF(cart_users, 0))::numeric, 2) AS cart_to_purchase_pct,
-    ROUND((purchase_users * 100.0 / NULLIF(view_users, 0))::numeric, 2) AS overall_conversion_pct
-FROM segment_summary
+    COUNT(*) AS total_users,
+    SUM(viewed) AS view_users,
+    SUM(valid_cart) AS cart_users,
+    SUM(valid_purchase) AS purchase_users,
+    SUM(viewed) - SUM(valid_cart) AS dropped_before_cart,
+    SUM(valid_cart) - SUM(valid_purchase) AS dropped_before_purchase,
+    ROUND((SUM(valid_cart) * 100.0 / NULLIF(SUM(viewed), 0))::numeric, 2) AS view_to_cart_pct,
+    ROUND((SUM(valid_purchase) * 100.0 / NULLIF(SUM(valid_cart), 0))::numeric, 2) AS cart_to_purchase_pct,
+    ROUND((SUM(valid_purchase) * 100.0 / NULLIF(SUM(viewed), 0))::numeric, 2) AS overall_conversion_pct
+FROM user_funnel_base_vw
+GROUP BY price_segment
 ORDER BY
     CASE
         WHEN price_segment = 'Low' THEN 1
         WHEN price_segment = 'Medium' THEN 2
         WHEN price_segment = 'High' THEN 3
     END;
-
 
 
 
@@ -243,5 +208,9 @@ ORDER BY
 
 -- Next Step:
 -- Analyze time-based patterns to understand when users are most
--- active and likely to convert
+-- active and likely to convertS
+
+-- Note:
+-- This analysis uses user_funnel_base_vw from 07_data_model.sql
+-- to ensure consistent funnel logic and price segmentation across queries
 	
