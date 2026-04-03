@@ -159,6 +159,8 @@ dashboard/ → (optional future work)
 - Loose funnel overestimates conversion → sequence matters
 - Medium & high-value users show stronger purchase intent
 - User behavior varies significantly across **time and intent levels**
+- High-activity users contribute a disproportionately large share of purchases,
+  indicating that engagement depth is a key driver of revenue
 
 ---
 
@@ -180,6 +182,7 @@ dashboard/ → (optional future work)
 ### 4. Reduce Friction
 - Simplify cart & checkout experience
 - Build trust signals (reviews, guarantees)
+
 
 ---
 
