@@ -31,6 +31,24 @@ This project combines **SQL (core analysis)** with **Python (EDA & visualization
 
 ---
 
+## 📊 Dashboard Preview
+
+![Funnel Dashboard](dashboard/dashboard.png)
+
+### Dashboard Highlights
+
+- End-to-end funnel visualization (View → Cart → Purchase)
+- Drop-off analysis across funnel stages
+- Conversion performance by price segment
+- Time-based behavior (hourly & weekday patterns)
+- Key insights panel for quick decision-making
+
+The dashboard is designed to provide a clear business narrative,
+not just metrics, enabling stakeholders to quickly identify
+optimization opportunities
+
+---
+
 
 ## 📊 Dataset
 
@@ -165,12 +183,42 @@ dashboard/ → (optional future work)
 
 ---
 
+## 📈 Business Impact Estimation
+
+- Improving the View → Cart conversion rate by just **5 percentage points**
+  could result in approximately **+180K to +200K additional purchases**
+
+- This highlights that small improvements in early funnel stages
+  can lead to significant downstream revenue impact due to scale
+
+- The View → Cart stage represents the highest leverage point
+  for optimizing overall business performance
+
+---
+
+## 👤 User Activity Insights
+
+- High-activity users show significantly higher conversion rates,
+  indicating stronger purchase intent and engagement
+
+- Low-activity users are primarily browsing users with weak intent,
+  contributing heavily to early-stage drop-offs
+
+- This suggests that user engagement depth is a strong predictor
+  of conversion likelihood
+
+Targeting high-activity users with personalized offers
+can significantly improve conversion efficiency  
+
+---
+
 ## 🛠️ Tools & Technologies
 
 - **SQL (PostgreSQL)** → core analysis (CTEs, aggregations, funnel logic)
 - **Python (Pandas, NumPy)** → data preprocessing
 - **Matplotlib / Seaborn** → visualization
 - **Jupyter Notebook**
+- **Power BI** → interactive dashboard development
 
 ---
 
